@@ -69,10 +69,9 @@ If client ID or client secret are expected to change during application runtime,
 use 0-arity functions in place of their values:
 
 ```clj
-{:client-id     (fn [] (slurp "client-id.txt))
- :client-secret (fn [] (slurp "client-secret.txt))
- ...
- }
+{:client-id     (fn [] (slurp "client-id.txt"))
+ :client-secret (fn [] (slurp "client-secret.txt"))
+ ...}
 ```
 
 ### How can I make sure that authentication is expired after some time?
@@ -87,8 +86,7 @@ Set `:external-url` to the real URL of your application:
 
 ```clj
 {:external-url "https://example.com"
- ...
- }
+ ...}
 ```
 
 [Token Introspection]: https://tools.ietf.org/html/rfc7662#section-2
