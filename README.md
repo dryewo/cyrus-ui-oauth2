@@ -81,6 +81,16 @@ If your identity provider returns expiring tokens and supports [Token Introspect
 you can set `:tokeninfo-url`. This way the library will check the token found in the incoming request against this endpoint,
 and will start login process instead of returning content when the token expires.
 
+### Wrong redirect URL is generated because my app is running behind a proxy
+
+Set `:external-url` to the real URL of your application:
+
+```clj
+{:external-url "https://example.com"
+ ...
+ }
+```
+
 [Token Introspection]: https://tools.ietf.org/html/rfc7662#section-2
 
 ## Reference
@@ -94,8 +104,8 @@ and will start login process instead of returning content when the token expires
 * `:client-id` — (required) Client ID (https://tools.ietf.org/html/rfc6749#section-2.2)
 * `:client-secret` — (required) Client Secret (https://tools.ietf.org/html/rfc6749#section-2.3.1)
 * `:redirect-endpoint` — (required) Application endpoint for Authorization Response (https://tools.ietf.org/html/rfc6749#section-4.1.2).
-  Can be a full URL or just a path, in whicn the full URL case will be inferred from `Host` header of the incoming request.
   Usually something like `/callback`.
+* `:external-url` — (optional) URL part for `:redirect-endpoint`. If not set, will be inferred from `Host` header of the incoming request.
 * `:login-endpoint` — (required) Application endpoint to start authentication process. When anonymous access is allowed, 
   Usually something like `/login`.
 * `:scopes` — (optional, defaults to empty) List of scopes (https://tools.ietf.org/html/rfc6749#section-3.3)
@@ -108,8 +118,7 @@ and will start login process instead of returning content when the token expires
   ```clj
   :cyrus-ui-oauth2/tokeninfo {...}
   ```
-  When not set, this key will contain the original response from `:access-token-url`.
-  
+  When not set, this key will contain the original response from `:access-token-url`.  
   If token is expired, a redirect to `:login-endpoint` will be returned instead.
 * `:logout-endpoint` — (optional, defaults to empty) Application endpoint to remove authentication information from the browser session.
   When not set, this functionality is unavailable. 

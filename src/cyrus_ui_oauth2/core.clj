@@ -65,17 +65,18 @@
       (assoc :session session)))
 
 
-(defn- get-redirect-url [profile request]
-  (-> (req/request-url request)
+(defn- get-redirect-url [{:keys [external-url redirect-endpoint]} request]
+  (-> (or external-url (req/request-url request))
       (URI/create)
-      (.resolve (:redirect-endpoint profile))
+      (.resolve redirect-endpoint)
       str))
 
 
 (defn random-state []
   (-> (random/base64 10) (str/replace "+" "-") (str/replace "/" "_")))
 
-(defn oauth2-workflow [{:as profile :keys [login-endpoint logout-endpoint redirect-endpoint tokeninfo-url default-landing-endpoint]}]
+
+(defn oauth2-workflow [{:as profile :keys [external-url login-endpoint logout-endpoint redirect-endpoint tokeninfo-url default-landing-endpoint]}]
   (fn [{:as request :keys [uri session params]}]
     (let [{:keys [code error state]} params
           redirect-url (get-redirect-url profile request)]
@@ -112,15 +113,6 @@
 
         ;; default
         nil))))
-
-
-;(defn spy [tag f]
-;  (fn [& args]
-;    (println "\uD83D\uDD75" tag)
-;    (clojure.pprint/pprint args)
-;    (let [r (apply f args)]
-;      (clojure.pprint/pprint r)
-;      r)))
 
 
 (defn- get-tokeninfo [tokeninfo-url token]
@@ -170,10 +162,11 @@
 (s/def ::allow-anon? (s/nilable boolean?))
 (s/def ::tokeninfo-url (s/nilable string?))
 (s/def ::logout-endpoint (s/nilable string?))
+(s/def ::external-url (s/nilable string?))
 (s/def ::scopes (s/nilable (s/coll-of string?)))
 
 (s/def ::profile (s/keys :req-un [::authorize-url ::access-token-url ::client-id ::client-secret ::redirect-endpoint ::login-endpoint]
-                         :opt-un [::scopes ::allow-anon? ::tokeninfo-url ::logout-endpoint ::default-landing-endpoint]))
+                         :opt-un [::external-url ::scopes ::allow-anon? ::tokeninfo-url ::logout-endpoint ::default-landing-endpoint]))
 
 (s/fdef wrap-ui-oauth2
         :args (s/cat :handler fn? :profile ::profile))

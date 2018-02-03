@@ -82,14 +82,29 @@
                       (handler request))]
       (given @*sessions
         ["session-key" ::friend/identity] := {:authentications {"access-token" {::uo2/access-token "access-token"
-                                                                                ::uo2/tokeninfo     {:access_token "access-token"}
+                                                                                ::uo2/tokeninfo    {:access_token "access-token"}
                                                                                 :identity          "access-token"
                                                                                 :roles             #{}}}
                                               :current         "access-token"})
       (given res
         :status := 303
         [:headers "Location"] := "http://localhost/")
-      [res *sessions])))
+      [res *sessions]))
+
+  (testing ":external-url is respected when set"
+    (let [*sessions (atom {"session-key" {::uo2/state "random-state"}})
+          handler (make-test-handler (assoc test-oauth2-profile-1 :external-url "https://example.com") *sessions)
+          request (-> (mock/request :get "/callback?code=very-secret-code&state=random-state")
+                      (mock/header "cookie" "ring-session=session-key"))]
+      (expect-call [(http/post ["access-token-url" params]
+                               (is (= (:form-params params) {:client_id     "client-id"
+                                                             :client_secret "client-secret"
+                                                             :code          "very-secret-code"
+                                                             :grant_type    "authorization_code"
+                                                             :redirect_uri  "https://example.com/callback"}))
+                               {:status 200
+                                :body   {:access_token "access-token"}})]
+        (handler request)))))
 
 
 (deftest authenticated-request
