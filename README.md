@@ -17,8 +17,7 @@ Add a namespace in your app, or add to the existing namespace:
 
 ```clj
 (ns my.app.ui
-  (:require [mount.lite :as m]
-            [cyrus-ui-oauth2.core :refer [wrap-ui-oauth2]
+  (:require [cyrus-ui-oauth2.core :refer [wrap-ui-oauth2]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.session.cookie :as cookie]))
 
