@@ -1,4 +1,4 @@
-(defproject cyrus/ui-oauth2 "0.1.2"
+(defproject cyrus/ui-oauth2 "0.1.3"
   :description "Library for UI authentication using OAuth2."
   :url "http://github.com/dryewo/cyrus-ui-oauth2"
   :license {:name "Eclipse Public License"
