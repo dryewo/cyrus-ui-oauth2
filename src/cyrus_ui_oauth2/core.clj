@@ -139,15 +139,26 @@
     (handler (enrich-request-tokeninfo request tokeninfo-url))))
 
 
+(defn wrap-default-x-forwarded-host [handler]
+  (fn [request]
+    ;; Some proxies don't set x-forwarded-host header (skipper) and at the same time
+    ;; some servers (aleph) set :server-name to the local hostname.
+    ;; The combination of these factors makes cemerick.friend.util/original-url return wrong URL.
+    ;; Here we set default x-forwarded-host to the value of host header
+    (let [host (get-in request [:headers "host"])]
+      (handler (update request :headers #(merge {"x-forwarded-host" host} %))))))
+
+
 (defn wrap-ui-oauth2 [handler profile]
-  (let [{:keys [allow-anon? login-endpoint default-landing-endpoint tokeninfo-url]} profile]
+  (let [{:keys [external-url allow-anon? login-endpoint default-landing-endpoint tokeninfo-url]} profile]
     (-> handler
         (friend/authenticate (merge (when default-landing-endpoint
                                       {:default-landing-uri default-landing-endpoint})
                                     {:allow-anon? allow-anon?
                                      :login-uri   login-endpoint
                                      :workflows   [(oauth2-workflow profile)]}))
-        (wrap-tokeninfo tokeninfo-url))))
+        (wrap-tokeninfo tokeninfo-url)
+        (wrap-default-x-forwarded-host))))
 
 
 (s/def ::string-or-getter (s/or :value string? :getter ifn?))
