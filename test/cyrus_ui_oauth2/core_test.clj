@@ -93,9 +93,9 @@
 
   (testing ":external-url is respected when set"
     (let [*sessions (atom {"session-key" {::uo2/state "random-state"}})
-          handler (make-test-handler (assoc test-oauth2-profile-1 :external-url "https://example.com") *sessions)
-          request (-> (mock/request :get "/callback?code=very-secret-code&state=random-state")
-                      (mock/header "cookie" "ring-session=session-key"))]
+          handler   (make-test-handler (assoc test-oauth2-profile-1 :external-url "https://example.com") *sessions)
+          request   (-> (mock/request :get "/callback?code=very-secret-code&state=random-state")
+                        (mock/header "cookie" "ring-session=session-key"))]
       (expect-call [(http/post ["access-token-url" params]
                                (is (= (:form-params params) {:client_id     "client-id"
                                                              :client_secret "client-secret"
@@ -121,3 +121,25 @@
       (given res
         :status := 200
         [:body ::uo2/tokeninfo] := {:access_token "access-token"}))))
+
+
+(deftest test-wrap-default-x-forwarded-host
+  (are [?in-headers ?out-headers]
+    (is (= ?out-headers (:headers ((wrap-default-x-forwarded-host identity) {:headers ?in-headers}))))
+    ;; Handles nil
+    nil nil
+    ;; When "host" is not set, keeps "x-forwarded-host"
+    {"x-forwarded-host" "external-host"}
+    {"x-forwarded-host" "external-host"}
+    ;; When "host" is nil, does not override "x-forwarded-host"
+    {"host" nil "x-forwarded-host" "external-host"}
+    {"host" nil "x-forwarded-host" "external-host"}
+    ;; "host" does not override "x-forwarded-host" when it's already there
+    {"host" "internal-host" "x-forwarded-host" "external-host"}
+    {"host" "internal-host" "x-forwarded-host" "external-host"}
+    ;; Provides "x-forwarded-host" when it's missing
+    {"host" "external-host"}
+    {"host" "external-host" "x-forwarded-host" "external-host"}
+    ;; Removes port number from "host" when providing "x-forwarded-host"
+    {"host" "external-host:8080"}
+    {"host" "external-host:8080" "x-forwarded-host" "external-host"}))

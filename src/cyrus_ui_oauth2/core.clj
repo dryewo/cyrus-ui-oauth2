@@ -145,8 +145,12 @@
     ;; some servers (aleph) set :server-name to the local hostname.
     ;; The combination of these factors makes cemerick.friend.util/original-url return wrong URL.
     ;; Here we set default x-forwarded-host to the value of host header
-    (let [host (get-in request [:headers "host"])]
-      (handler (update request :headers #(merge {"x-forwarded-host" host} %))))))
+    (handler
+      (if-let [host (some-> (get-in request [:headers "host"])
+                            (str/split #":")
+                            first)]
+        (update request :headers #(merge {"x-forwarded-host" host} %))
+        request))))
 
 
 (defn wrap-ui-oauth2 [handler profile]
@@ -180,4 +184,4 @@
                          :opt-un [::external-url ::scopes ::allow-anon? ::tokeninfo-url ::logout-endpoint ::default-landing-endpoint]))
 
 (s/fdef wrap-ui-oauth2
-        :args (s/cat :handler fn? :profile ::profile))
+  :args (s/cat :handler fn? :profile ::profile))
