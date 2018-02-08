@@ -9,6 +9,8 @@ Library for UI authentication using OAuth2. Built on top of [Friend](https://git
 [cyrus/ui-oauth2 "0.1.3"]
 ```
 
+Part of [cyrus] Leiningen template.
+
 ## Tutorial
 
 Go to github.com, register an application and copy its client credentials.
@@ -49,6 +51,10 @@ Add a namespace in your app, or add to the existing namespace:
 ```
 
 The example suggests using cookies to store session information.
+
+Alternatively, you can just use [cyrus] template with `+ui-oauth2` option, it will generate this code for you:
+
+    $ lein new cyrus my.app +ui-oauth2
 
 ## Concepts
 
@@ -124,7 +130,7 @@ Set `:external-url` to the real URL of your application:
   for example, after an external link directly to `:login-endpoint`.
 
 [Ring handler]: https://github.com/ring-clojure/ring/wiki/Concepts#handlers
-
+[cyrus]: https://github.com/dryewo/cyrus
 
 ## License
 
