@@ -6,7 +6,7 @@
 Library for UI authentication using OAuth2. Built on top of [Friend](https://github.com/cemerick/friend).
 
 ```clj
-[cyrus/ui-oauth2 "0.1.3"]
+[cyrus/ui-oauth2 "0.1.4"]
 ```
 
 Part of [cyrus] Leiningen template.
