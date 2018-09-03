@@ -13,7 +13,8 @@ Part of [cyrus] Leiningen template.
 
 ## Tutorial
 
-Go to github.com, register an application and copy its client credentials.
+Go to https://github.com, [create an OAuth2 application](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
+and copy its client credentials.
 
 Add a namespace in your app, or add to the existing namespace:
 
