@@ -15,7 +15,7 @@
             [lein-shell "0.5.0"]
             [lein-ancient "0.6.15"]
             [lein-changelog "0.3.2"]]
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0"]
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.10.0"]
                                   [ring/ring-mock "0.3.2"]
                                   [juxt/iota "0.2.3"]
                                   [whitepages/expect-call "0.1.0"]
